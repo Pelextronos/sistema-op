@@ -4,74 +4,104 @@
   <meta charset="UTF-8">
   <title>Sistema OP - Login</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     body {
-      background:#111;
-      color:white;
-      font-family:Arial;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
+
     .box {
-      background:#1e1e1e;
-      padding:30px;
-      border-radius:10px;
-      width:300px;
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
     }
+
     input {
-      width:100%;
-      padding:10px;
-      margin-bottom:10px;
-      border:none;
-      border-radius:5px;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 5px;
     }
+
     button {
-      width:100%;
-      padding:10px;
-      background:#00c896;
-      border:none;
-      border-radius:5px;
-      color:white;
-      font-weight:bold;
+      width: 100%;
+      padding: 10px;
+      background: #00c896;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #ff6b6b;
+    }
+
+    .version {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      font-size: 12px;
+      opacity: 0.6;
     }
   </style>
 </head>
 <body>
 
-<div class="box">
-  <h3>Login Sistema OP</h3>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Ingresar</button>
-  <p id="message"></p>
-</div>
+  <div class="box">
+    <h3>Login Sistema OP</h3>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Ingresar</button>
+    <div id="message"></div>
+  </div>
 
-<script>
-  const supabase = window.supabase.createClient(
-    "https://qnizwkrpjyuzfmsxsbdn.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFuaXp3a3Jwanl1emZtc3hzYmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0Nzk3MjksImV4cCI6MjA4ODA1NTcyOX0.zsVLO4deW58NBwPg6vHfUVrq7AIRxQvRYo842wrEnZI"
-  );
+  <div class="version">
+    Versión: 1
+  </div>
 
-  async function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const message = document.getElementById("message");
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://qnizwkrpjyuzfmsxsbdn.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFuaXp3a3Jwanl1emZtc3hzYmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0Nzk3MjksImV4cCI6MjA4ODA1NTcyOX0.zsVLO4deW58NBwPg6vHfUVrq7AIRxQvRYo842wrEnZI"
+    );
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const message = document.getElementById("message");
 
-    if (error) {
-      message.innerText = "Error: " + error.message;
-    } else {
-      message.innerText = "Login correcto!";
-      window.location.href = "panel.html";
+      message.innerText = "Intentando login...";
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        message.innerText = "Error: " + error.message;
+      } else {
+        message.style.color = "#00c896";
+        message.innerText = "Login correcto!";
+        setTimeout(() => {
+          window.location.href = "panel.html";
+        }, 1000);
+      }
     }
-  }
-</script>
+  </script>
 
 </body>
 </html>
