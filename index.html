@@ -47,6 +47,7 @@
     #message {
       margin-top:10px;
       font-size:14px;
+      word-break: break-word;
     }
 
     .version {
@@ -65,11 +66,11 @@
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
   <button id="btnLogin">Ingresar</button>
-  <div id="message"></div>
+  <div id="message">Esperando acción...</div>
 </div>
 
 <div class="version">
-  Versión: 3
+  Versión: 4
 </div>
 
 <script>
@@ -85,23 +86,24 @@
     const message = document.getElementById("message");
 
     message.innerText = "Intentando login...";
-    message.style.color = "white";
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    try {
+      const response = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    if (error) {
-      message.innerText = "Error: " + error.message;
-      message.style.color = "#ff6b6b";
-    } else {
-      message.innerText = "Login correcto!";
-      message.style.color = "#00c896";
+      if (response.error) {
+        message.innerText = "ERROR: " + response.error.message;
+        message.style.color = "red";
+      } else {
+        message.innerText = "Login correcto. UID: " + response.data.user.id;
+        message.style.color = "lime";
+      }
 
-      setTimeout(() => {
-        window.location.href = "panel.html";
-      }, 1000);
+    } catch (err) {
+      message.innerText = "CATCH ERROR: " + err;
+      message.style.color = "orange";
     }
 
   });
