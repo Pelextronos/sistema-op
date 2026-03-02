@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Sistema OP - Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     body {
       background:#111;
@@ -42,6 +44,11 @@
       cursor:pointer;
     }
 
+    #message {
+      margin-top:10px;
+      font-size:14px;
+    }
+
     .version {
       position:fixed;
       bottom:10px;
@@ -53,23 +60,52 @@
 </head>
 <body>
 
-  <div class="box">
-    <h3>Login Sistema OP</h3>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button id="btnLogin">Ingresar</button>
-    <div id="message"></div>
-  </div>
+<div class="box">
+  <h3>Login Sistema OP</h3>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button id="btnLogin">Ingresar</button>
+  <div id="message"></div>
+</div>
 
-  <div class="version">
-    Versión: 2
-  </div>
+<div class="version">
+  Versión: 3
+</div>
 
-  <script>
-    document.getElementById("btnLogin").addEventListener("click", function() {
-      alert("Botón funcionando correctamente");
+<script>
+  const supabase = window.supabase.createClient(
+    "https://qnizwkrpjyuzfmsxsbdn.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFuaXp3a3Jwanl1emZtc3hzYmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0Nzk3MjksImV4cCI6MjA4ODA1NTcyOX0.zsVLO4deW58NBwPg6vHfUVrq7AIRxQvRYo842wrEnZI"
+  );
+
+  document.getElementById("btnLogin").addEventListener("click", async function() {
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("message");
+
+    message.innerText = "Intentando login...";
+    message.style.color = "white";
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
     });
-  </script>
+
+    if (error) {
+      message.innerText = "Error: " + error.message;
+      message.style.color = "#ff6b6b";
+    } else {
+      message.innerText = "Login correcto!";
+      message.style.color = "#00c896";
+
+      setTimeout(() => {
+        window.location.href = "panel.html";
+      }, 1000);
+    }
+
+  });
+</script>
 
 </body>
 </html>
