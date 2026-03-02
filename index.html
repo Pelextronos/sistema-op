@@ -46,7 +46,7 @@
 
     #message {
       margin-top:10px;
-      font-size:14px;
+      font-size:13px;
       word-break: break-word;
     }
 
@@ -66,44 +66,44 @@
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
   <button id="btnLogin">Ingresar</button>
-  <div id="message">Esperando acción...</div>
+  <div id="message">Cargando...</div>
 </div>
 
 <div class="version">
-  Versión: 4
+  Versión: 5
 </div>
 
 <script>
-  const supabase = window.supabase.createClient(
-    "https://qnizwkrpjyuzfmsxsbdn.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFuaXp3a3Jwanl1emZtc3hzYmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0Nzk3MjksImV4cCI6MjA4ODA1NTcyOX0.zsVLO4deW58NBwPg6vHfUVrq7AIRxQvRYo842wrEnZI"
-  );
+  const message = document.getElementById("message");
+
+  if (window.supabase) {
+    message.innerText = "Supabase cargado ✔";
+  } else {
+    message.innerText = "Supabase NO cargado ❌";
+  }
 
   document.getElementById("btnLogin").addEventListener("click", async function() {
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const message = document.getElementById("message");
-
-    message.innerText = "Intentando login...";
+    message.innerText = "Botón detectado ✔";
 
     try {
-      const response = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      const supabase = window.supabase.createClient(
+        "https://qnizwkrpjyuzfmsxsbdn.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFuaXp3a3Jwanl1emZtc3hzYmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0Nzk3MjksImV4cCI6MjA4ODA1NTcyOX0.zsVLO4deW58NBwPg6vHfUVrq7AIRxQvRYo842wrEnZI"
+      );
 
-      if (response.error) {
-        message.innerText = "ERROR: " + response.error.message;
-        message.style.color = "red";
+      message.innerText = "Intentando conectar...";
+
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        message.innerText = "Error conexión: " + error.message;
       } else {
-        message.innerText = "Login correcto. UID: " + response.data.user.id;
-        message.style.color = "lime";
+        message.innerText = "Conectado a Supabase ✔";
       }
 
     } catch (err) {
-      message.innerText = "CATCH ERROR: " + err;
-      message.style.color = "orange";
+      message.innerText = "CATCH: " + err;
     }
 
   });
