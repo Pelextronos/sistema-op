@@ -1,26 +1,153 @@
+<!-- Versión: 3 -->
+
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>Panel Sistema OP</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     body {
-      background:#111;
-      color:white;
-      font-family:Arial;
-      text-align:center;
-      padding-top:100px;
+      background: #0f0f0f;
+      color: white;
+      font-family: Arial;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .board {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+    }
+
+    .column {
+      background: #1c1c1c;
+      padding: 10px;
+      border-radius: 8px;
+      min-width: 260px;
+      flex-shrink: 0;
+    }
+
+    .column h2 {
+      font-size: 15px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 6px;
+      margin: 0 0 10px 0;
+    }
+
+    .card {
+      background: #2a2a2a;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      background: #333;
+    }
+
+    /* Prioridades */
+    .card.verde {
+      border-left: 6px solid #2ecc71;
+    }
+
+    .card.amarillo {
+      border-left: 6px solid #f1c40f;
+    }
+
+    .card.rojo {
+      border-left: 6px solid #e74c3c;
+    }
+
+    .version {
+      position: fixed;
+      bottom: 5px;
+      right: 10px;
+      font-size: 12px;
+      opacity: 0.4;
     }
   </style>
 </head>
+
 <body>
 
-<h1>Bienvenido al Sistema OP</h1>
-<p>Login exitoso 🚀</p>
+<h1>Panel de Producción</h1>
 
-<div style="position:fixed; bottom:10px; right:15px; font-size:12px; opacity:0.6;">
-Versión Panel: 1
+<div class="board">
+  <div class="column" id="recibida"><h2>🆕 Recibidas</h2></div>
+  <div class="column" id="tecnica"><h2>🧠 Área Técnica</h2></div>
+  <div class="column" id="corte"><h2>🔪 Corte</h2></div>
+  <div class="column" id="procesado"><h2>⚙ Procesado</h2></div>
+  <div class="column" id="armado"><h2>🏗 Armado</h2></div>
+  <div class="column" id="control"><h2>🔍 Control</h2></div>
+  <div class="column" id="retiro"><h2>📦 Pendiente Retiro</h2></div>
 </div>
+
+<div class="version">Versión: 3</div>
+
+<script>
+  /* =========================
+     PEGÁ TUS DATOS ACÁ
+     ========================= */
+
+  const supabaseUrl = "https://TU_PROJECT_ID.supabase.co";
+  const supabaseKey = "";
+
+  /* ========================= */
+
+  const { createClient } = supabase;
+  const db = createClient(supabaseUrl, supabaseKey);
+
+  async function cargarOP() {
+
+    const { data, error } = await db
+      .from("ordenes_produccion")
+      .select("*")
+      .order("fecha_creacion", { ascending: false });
+
+    if (error) {
+      console.error("Error:", error);
+      alert("Error cargando órdenes");
+      return;
+    }
+
+    // Limpiar columnas
+    document.querySelectorAll(".column").forEach(col => {
+      col.querySelectorAll(".card").forEach(c => c.remove());
+    });
+
+    data.forEach(op => {
+
+      const card = document.createElement("div");
+      card.className = "card " + (op.prioridad || "verde");
+
+      card.innerHTML = `
+        <strong>${op.codigo_op}</strong><br>
+        ${op.cliente_nombre || ""}<br>
+        ${op.descripcion || ""}<br>
+        Cantidad: ${op.cantidad || 0}
+      `;
+
+      const columna = document.getElementById(op.estado || "recibida");
+
+      if (columna) {
+        columna.appendChild(card);
+      }
+    });
+  }
+
+  cargarOP();
+</script>
 
 </body>
 </html>
